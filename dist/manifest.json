@@ -1,0 +1,29 @@
+{
+  "manifest_version": 2,
+
+  "name": "Tesco Auto Trolley",
+  "description": "Auto filling of Tesco trolley making online shopping completely automated",
+  "version": "1.0",
+
+  "options_ui": {
+    "page": "options.html",
+    "chrome_style": true
+  },
+
+  "browser_action": {
+    "default_icon": "icon.png",
+    "default_popup": "popup.html"
+  },
+
+  "content_scripts": [
+      {
+          "matches": ["<all_urls>"],
+          "js": ["js/vendor.js", "js/main.js"]
+      }
+  ],
+
+  "permissions": [
+    "storage",
+    "<all_urls>"
+  ]
+}
