@@ -1,7 +1,7 @@
 import * as $ from 'jquery';
 
 
-const token = 'e15b7d81a129c77ca1d2ccb0603109975b5de772';
+const token = '';
 const projectName = 'Dieta';
 const aliases = {
   'pomidor malinowy': 2003120446730,
