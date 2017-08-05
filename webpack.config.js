@@ -4,6 +4,8 @@ const path = require('path');
 module.exports = {
     entry: {
         main: path.join(__dirname, 'src/main.ts'),
+        tesco_api: path.join(__dirname, 'src/tesco_api.ts'),
+        patterns: path.join(__dirname, 'src/patterns.ts'),
         vendor: ['moment', 'jquery']
     },
     output: {
