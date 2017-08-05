@@ -2,8 +2,6 @@ import * as $ from 'jquery';
 import patterns from './patterns';
 import { findProduct, getProduct, addToTrolley, resetTrolley } from './tesco_api';
 
-const token = '';
-const projectName = 'Dieta - next';
 const aliases = {
   'borówki amerykańskie': 2003000323849,
   'maślanki': 2003009324991,
@@ -28,7 +26,7 @@ const aliases = {
   'płatków migdałowych': 2003009778855,
 };
 
-function getIngredientsList(apiKey: String, projectName: String, callback) {
+function getIngredientsList(apiKey: string, projectName: string, callback) {
     return $.ajax({
         type: "POST",
         url: 'https://todoist.com/api/v7/sync',
@@ -121,8 +119,6 @@ function makeParseIngredients(callback) {
 }
 
 function addProductsToTrolley(products) {
-  console.log('Will add following products');
-  console.log(products);
   for (let productId in products) {
       if (products.hasOwnProperty(productId)) {
         const pcsValue = Math.ceil(products[productId]);
@@ -132,19 +128,42 @@ function addProductsToTrolley(products) {
 }
 
 
-function importProducts(apiKey: String, projectName: String) {
+function importProducts(apiKey: string, projectName: string) {
 
   const parseIngredients = makeParseIngredients(addProductsToTrolley)
 
   getIngredientsList(apiKey, projectName, parseIngredients);
 }
 
-// Ultimately map every quantity to PCS
-// Look at averageWeight to determine quantity of the product (always in kgs)
+$(function() {
+  console.log('started content script');
+  const props = $('html').data('props');
+  const user = props.user;
 
+  if (!user.isAuthenticated) {
+    console.log('[Tesco Auto Trolley]: Please log in to your Tesco account first');
+    return;
+  }
 
-// addToTrolley(niveaId, '3', 'pcs');
+  const $button = $('<a href="#" id="autoTrolleyImport" class="button button-primary "><span>Import products</span></a>');
+  const $headerCheckout = $('div.mini-trolley--header-checkout');
+  let token;
+  let project;
+  const p1 = chrome.storage.sync.get('todoist_token', (item) => token = item.todoist_token)
+  const p2 = chrome.storage.sync.get('todoist_project', (item) => project = item.todoist_project);
 
-// importProducts(token, projectName);
+  $headerCheckout.append($button);
 
-console.log(getProduct('2003120346382', (product) => console.log(product)));
+  $button.on('click', (event) => {
+      event.preventDefault();
+      console.log('importing products...');
+
+      Promise.all([p1, p2]).then(() => {
+        importProducts(token, project);
+
+        setTimeout(() => location.reload(), 6000);
+      });
+
+      return false;
+  });
+});

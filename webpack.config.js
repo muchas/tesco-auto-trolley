@@ -6,6 +6,7 @@ module.exports = {
         main: path.join(__dirname, 'src/main.ts'),
         tesco_api: path.join(__dirname, 'src/tesco_api.ts'),
         patterns: path.join(__dirname, 'src/patterns.ts'),
+        popup: path.join(__dirname, 'src/popup.ts'),
         vendor: ['moment', 'jquery']
     },
     output: {
