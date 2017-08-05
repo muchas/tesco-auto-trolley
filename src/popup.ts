@@ -11,8 +11,7 @@ $(function() {
   $('#save').click(() => {
     const token = (<string>$token.val());
     const projectName = (<string>$project.val());
-    console.log(token);
-    console.log(projectName);
+
     chrome.storage.sync.set({'todoist_token': token, 'todoist_project': projectName});
   });
 });

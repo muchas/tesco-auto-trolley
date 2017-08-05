@@ -24,6 +24,9 @@ const aliases = {
   'płatków owsianych błyskawicznych': 2003005726553,
   'płatki migdałowe': 2003009778855,
   'płatków migdałowych': 2003009778855,
+  'wód mineralnych': 2003000004236,
+  'woda mineralna': 2003000004236,
+  'activia jagoda': 2003011693597,
 };
 
 function getIngredientsList(apiKey: string, projectName: string, callback) {
@@ -31,15 +34,19 @@ function getIngredientsList(apiKey: string, projectName: string, callback) {
         type: "POST",
         url: 'https://todoist.com/api/v7/sync',
         data: {
-          resource_types: '["projects", "items"]',
+          resource_types: '["projects", "items", "labels"]',
           sync_token: '*',
           token: apiKey,
         },
     }).done((data) => {
+      const label = data['labels'].find(label => label.name === "produkt");
       const project = data['projects'].find(project => project.name === projectName);
+      const isIngredient = (item) => {
+          return item.project_id === project.id &&
+          (item.indent === 2 || item.labels.find(e => e === label.id) !== undefined);
+      };
       const items = data['items']
-                      .filter(item => item.indent === 2 &&
-                        item.project_id === project.id)
+                      .filter(isIngredient)
                       .map(item => item.content);
 
       callback(items);
@@ -74,7 +81,6 @@ function unifyQuantity(product, quantity: number, quantityType) {
   if (quantityType === "pcs") return quantity;
   if (quantityType === "g" || quantityType === "ml") {
     const productAverageWeight = product.averageWeight * 1000;
-    console.log(`${product.description} - quantity: ${quantity} / avg: ${productAverageWeight} = ${quantity / productAverageWeight}`)
     return quantity / productAverageWeight;
   } else {
     console.log(`Could not recognize quantityType: ${quantityType}`);
@@ -136,29 +142,35 @@ function importProducts(apiKey: string, projectName: string) {
 }
 
 $(function() {
-  console.log('started content script');
+  console.log('[Tesco Auto Trolley]: started');
   const props = $('html').data('props');
   const user = props.user;
 
   if (!user.isAuthenticated) {
     console.log('[Tesco Auto Trolley]: Please log in to your Tesco account first');
-    return;
+    return false;
   }
 
   const $button = $('<a href="#" id="autoTrolleyImport" class="button button-primary "><span>Import products</span></a>');
   const $headerCheckout = $('div.mini-trolley--header-checkout');
-  let token;
-  let project;
-  const p1 = chrome.storage.sync.get('todoist_token', (item) => token = item.todoist_token)
-  const p2 = chrome.storage.sync.get('todoist_project', (item) => project = item.todoist_project);
 
   $headerCheckout.append($button);
 
   $button.on('click', (event) => {
       event.preventDefault();
-      console.log('importing products...');
+      let token;
+      let project;
+
+      const p1 = chrome.storage.sync.get('todoist_token', (item) => token = item.todoist_token)
+      const p2 = chrome.storage.sync.get('todoist_project', (item) => project = item.todoist_project);
 
       Promise.all([p1, p2]).then(() => {
+        if (token === undefined || project === undefined) {
+          console.log('[Tesco Auto Trolley]: todoist token or project name missing')
+          return false;
+        }
+
+        console.log('importing products...');
         importProducts(token, project);
 
         setTimeout(() => location.reload(), 6000);
