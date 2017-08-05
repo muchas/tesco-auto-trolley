@@ -20,9 +20,14 @@ Click __Load unpacked extension...__ and select `dist` directory.
 
 Firstly let's create new project for your weekly meals list in Todoist App (https://todoist.com/).
 
+![adding project to image](https://github.com/muchas/tesco-auto-trolley/blob/master/docs/todoist-project.png)
+
 Then grab your Todoist API token from Settings > Integrations.
 
 Put API token and project name in *Tesco Auto Trolley* settings and you're all set!
+
+![auto trolley settings](https://github.com/muchas/tesco-auto-trolley/blob/master/docs/settings.png)
+
 
 ### Meals list
 
@@ -51,12 +56,16 @@ Allowed ingredient formats:
 
 Example:
 
+![meals list](https://github.com/muchas/tesco-auto-trolley/blob/master/docs/meal-list.png)
+
 
 ### Generating Tesco trolley
 
 Log in to your Tesco account at https://ezakupy.tesco.pl/.
 
 You should see blue button `Import products` on the right side of the page.
+
+![blue import product button](https://github.com/muchas/tesco-auto-trolley/blob/master/docs/import-button.png)
 
 After clicking the button please wait about 6 seconds, page should be automatically refreshed.
 
@@ -73,5 +82,7 @@ __Double check__ product quantities before finishing the order, errors are likel
 ### Build project
 
 `npm install`
+
 `npm run build`
+
 `npm run watch`
