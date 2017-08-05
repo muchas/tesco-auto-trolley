@@ -158,13 +158,16 @@ $(function() {
 
   $button.on('click', (event) => {
       event.preventDefault();
+
       let token;
       let project;
 
-      const p1 = chrome.storage.sync.get('todoist_token', (item) => token = item.todoist_token)
-      const p2 = chrome.storage.sync.get('todoist_project', (item) => project = item.todoist_project);
+      chrome.storage.sync.get(['todoist_token', 'todoist_project'], (item) => {
+        const token = item.todoist_token;
+        const project = item.todoist_project;
 
-      Promise.all([p1, p2]).then(() => {
+        console.log(token, project);
+
         if (token === undefined || project === undefined) {
           console.log('[Tesco Auto Trolley]: todoist token or project name missing')
           return false;
