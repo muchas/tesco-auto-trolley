@@ -142,8 +142,6 @@ $(function () {
     $headerCheckout.append($button);
     $button.on('click', (event) => {
         event.preventDefault();
-        let token;
-        let project;
         chrome.storage.sync.get(['todoist_token', 'todoist_project'], (item) => {
             const token = item.todoist_token;
             const project = item.todoist_project;
