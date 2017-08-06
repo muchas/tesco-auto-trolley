@@ -38,7 +38,7 @@ function getIngredientsList(apiKey: string, projectName: string, callback) {
           sync_token: '*',
           token: apiKey,
         },
-    }).done((data) => {
+    }).then((data) => {
       const label = data['labels'].find(label => label.name === "produkt");
       const project = data['projects'].find(project => project.name === projectName);
       const isIngredient = (item) => {
@@ -49,7 +49,7 @@ function getIngredientsList(apiKey: string, projectName: string, callback) {
                       .filter(isIngredient)
                       .map(item => item.content);
 
-      callback(items);
+      return callback(items);
     });
 }
 
@@ -120,17 +120,22 @@ function makeParseIngredients(callback) {
         promises.push(promise);
     }
 
-    Promise.all(promises).then(() => callback(products));
+    return Promise.all(promises).then(() => {
+      return callback(products);
+    });
   }
 }
 
 function addProductsToTrolley(products) {
+  const promises = [];
   for (let productId in products) {
       if (products.hasOwnProperty(productId)) {
         const pcsValue = Math.ceil(products[productId]);
-        addToTrolley(productId, pcsValue, 'pcs');
+        promises.push(addToTrolley(productId, pcsValue, 'pcs'));
       }
   }
+
+  return Promise.all(promises);
 }
 
 
@@ -138,7 +143,7 @@ function importProducts(apiKey: string, projectName: string) {
 
   const parseIngredients = makeParseIngredients(addProductsToTrolley)
 
-  getIngredientsList(apiKey, projectName, parseIngredients);
+  return getIngredientsList(apiKey, projectName, parseIngredients);
 }
 
 $(function() {
@@ -174,9 +179,7 @@ $(function() {
         }
 
         console.log('importing products...');
-        importProducts(token, project);
-
-        setTimeout(() => location.reload(), 6000);
+        importProducts(token, project).done((data) => location.reload());
       });
 
       return false;

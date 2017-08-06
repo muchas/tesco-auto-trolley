@@ -1,4 +1,4 @@
-webpackJsonp([1],{
+webpackJsonp([0],{
 
 /***/ 2:
 /***/ (function(module, exports, __webpack_require__) {
@@ -75,7 +75,7 @@ function getProduct(productId, callback) {
 }
 exports.getProduct = getProduct;
 function addToTrolley(productId, quantity, unitType) {
-    const response = $.ajax({
+    return $.ajax({
         type: "PUT",
         url: `${BASE_URL}/trolley/items?_method=PUT`,
         contentType: "application/json; charset=utf-8",

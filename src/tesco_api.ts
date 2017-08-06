@@ -76,7 +76,7 @@ function getProduct(productId, callback) {
 
 
 function addToTrolley(productId: String, quantity: number, unitType: String) {
-  const response = $.ajax({
+  return $.ajax({
     type: "PUT",
     url: `${BASE_URL}/trolley/items?_method=PUT`,
     contentType: "application/json; charset=utf-8",
